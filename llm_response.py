@@ -1,8 +1,6 @@
 __import__('pysqlite3')
 import sys
 sys.modules['sqlite3'] = sys.modules.pop('pysqlite3')
-from langchain_openai import ChatOpenAI
-from langchain_anthropic import ChatAnthropic
 from langchain.chains import create_history_aware_retriever, create_retrieval_chain
 from langchain.chains.combine_documents import create_stuff_documents_chain
 from langchain_core.output_parsers import StrOutputParser
@@ -18,6 +16,7 @@ from typing import AsyncGenerator
 from langsmith import Client 
 import streamlit as st
 from retrieval import Retriever
+import google.generativeai as genai
 
 
 
@@ -45,11 +44,15 @@ class MentalHealthBot:
         dummy_retriever = retriever.retriever_dummy
 
         print("Initializing LLM")
-        llm = ChatOpenAI(temperature=0.7, model= "gpt-4o-mini-2024-07-18", api_key=st.secrets["OPENAI_KEY"], streaming=True)
-        summary_llm = ChatAnthropic(temperature=0.7, model="claude-3-5-sonnet-20240620", api_key=st.secrets["ANTHROPIC_KEY"])
+        # llm = ChatOpenAI(temperature=0.7, model= "gpt-4o-mini-2024-07-18", api_key=st.secrets["OPENAI_KEY"], streaming=True)
+        # summary_llm = ChatAnthropic(temperature=0.7, model="claude-3-5-sonnet-20240620", api_key=st.secrets["ANTHROPIC_KEY"])
         # dummy_llm = ChatOpenAI(temperature=0.7, model= "gpt-4o-mini-2024-07-18", api_key=st.secrets["OPENAI_KEY"], max_tokens=1)
 
-        # 
+        GEMINI_API_KEY = "AIzaSyC_e5VPxiDbXjG09f3ZLBdvt6XEJU9lmRY"
+        genai.configure(api_key=GEMINI_API_KEY)
+        model = genai.GenerativeModel("gemini-2.5-pro-exp-03-25")
+        response = model.generate_content("Write a poem about AI.")
+        print(response.text)
         with open("retriever_prompt.txt", "r") as f:
             retriever_prompt = f.read()
 
@@ -73,7 +76,7 @@ class MentalHealthBot:
             ]
         )
         # audit_summary_template = ChatPromptTemplate.from_template(audit_summary_prompt)
-        # test
+
         history_aware_retriever = create_history_aware_retriever(
             summary_llm, rag_retriver, retriever_template
         )
