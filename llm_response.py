@@ -18,6 +18,7 @@ from langsmith import Client
 import streamlit as st
 from retrieval import Retriever
 import google.generativeai as genai
+from dotenv import load_dotenv, get_key
 
 
 
@@ -48,6 +49,10 @@ class MentalHealthBot:
         # llm = ChatOpenAI(temperature=0.7, model= "gpt-4o-mini-2024-07-18", api_key=st.secrets["OPENAI_KEY"], streaming=True)
         # summary_llm = ChatAnthropic(temperature=0.7, model="claude-3-5-sonnet-20240620", api_key=st.secrets["ANTHROPIC_KEY"])
         # dummy_llm = ChatOpenAI(temperature=0.7, model= "gpt-4o-mini-2024-07-18", api_key=st.secrets["OPENAI_KEY"], max_tokens=1)
+
+        
+        load_dotenv()
+        GEMINI_API_KEY = get_key("GEMINI_API_KEY", dotenv_path=".env")
 
         genai.configure(api_key=GEMINI_API_KEY)
 
