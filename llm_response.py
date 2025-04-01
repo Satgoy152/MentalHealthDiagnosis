@@ -1,6 +1,4 @@
-__import__('pysqlite3')
 import sys
-sys.modules['sqlite3'] = sys.modules.pop('pysqlite3')
 from langchain_google_genai import ChatGoogleGenerativeAI
 from langchain.chains import create_history_aware_retriever, create_retrieval_chain
 from langchain.chains.combine_documents import create_stuff_documents_chain
@@ -32,9 +30,9 @@ class MentalHealthBot:
 
         print("Starting Bot -----------------------------------###")
 
-        os.environ["LANGCHAIN_TRACING_V2"] = "true"
-        os.environ["LANGCHAIN_ENDPOINT"] = "https://api.smith.langchain.com"
-        os.environ["LANGCHAIN_API_KEY"] = st.secrets["LANGCHAIN_API_KEY"]
+        # os.environ["LANGCHAIN_TRACING_V2"] = "true"
+        # os.environ["LANGCHAIN_ENDPOINT"] = "https://api.smith.langchain.com"
+        # os.environ["LANGCHAIN_API_KEY"] = st.secrets["LANGCHAIN_API_KEY"]
 
         client = Client()
 
@@ -43,7 +41,7 @@ class MentalHealthBot:
 
         # create retrievers for audit(dummy) and chat(rag)
         rag_retriver = retriever.retriver_sim
-        dummy_retriever = retriever.retriever_dummy
+        # dummy_retriever = retriever.retriever_dummy
 
         print("Initializing LLM")
         # llm = ChatOpenAI(temperature=0.7, model= "gpt-4o-mini-2024-07-18", api_key=st.secrets["OPENAI_KEY"], streaming=True)
@@ -52,21 +50,22 @@ class MentalHealthBot:
 
         
         load_dotenv()
-        GEMINI_API_KEY = get_key("GEMINI_API_KEY", dotenv_path=".env")
+        GEMINI_API_KEY = get_key(dotenv_path=".env", key_to_get="GEMINI_API_KEY")
 
-        genai.configure(api_key=GEMINI_API_KEY)
+        # genai.configure(api_key=GEMINI_API_KEY)
 
         # use LangChain's wrapper for Gemini
-        gemini_llm = ChatGoogleGenerativeAI(model="gemini-pro", google_api_key=GEMINI_API_KEY)
-        response = gemini_llm.generate_content("Write a poem about AI.")
-        print(response.text)
+        llm = ChatGoogleGenerativeAI(model="gemini-2.0-flash", google_api_key=GEMINI_API_KEY)
+        summary_llm = ChatGoogleGenerativeAI(model="gemini-2.0-flash", google_api_key=GEMINI_API_KEY)
+        # response = gemini_llm.generate_content("Write a poem about AI.")
+        # print(response.text)
 
         with open("retriever_prompt.txt", "r") as f:
             retriever_prompt = f.read()
 
 
-        with open("tara_prompt.txt", "r") as f:
-            tara_prompt = f.read()
+        with open("prompt.txt", "r") as f:
+            prompt = f.read()
         
         retriever_template = ChatPromptTemplate.from_messages(
             [
@@ -76,24 +75,25 @@ class MentalHealthBot:
             ]
         )
 
-        tara_prompt_template = ChatPromptTemplate.from_messages(
+        prompt_template = ChatPromptTemplate.from_messages(
             [
-                ("system", tara_prompt),
+                ("system", prompt),
                 MessagesPlaceholder("chat_history"),
                 ("human", "{input}"),
+                ("system", "{context}"),
             ]
         )
         # audit_summary_template = ChatPromptTemplate.from_template(audit_summary_prompt)
 
         history_aware_retriever = create_history_aware_retriever(
-            gemini_llm, rag_retriver, retriever_template
+            summary_llm, rag_retriver, retriever_template
         )
 
 
         print("Creating RAG chain")
         
         #create chain to insert documents for context (rag documents)
-        augmented_chain = create_stuff_documents_chain(llm, tara_prompt_template)
+        augmented_chain = create_stuff_documents_chain(llm, prompt_template)
 
         # chain that retrieves documents and then passes them to the question_answer_chain
 
