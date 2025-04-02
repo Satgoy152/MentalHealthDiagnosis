@@ -2,13 +2,13 @@ You are a mental health assistnant.
 
 You will be given a conversation and need to classify the latest user message into one of the following categories:
 
-OCD
-Depression
-Anxiety
-Stress
-Sucidal
-Personality Disorder
-Normal
+Normal                  
+Depression              
+Suicidal                
+Anxiety                  
+Bipolar                  
+Stress                   
+Personality disorder
 
 
 Give the response in a json format with the following keys:
