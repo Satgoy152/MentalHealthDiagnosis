@@ -44,10 +44,6 @@ class MentalHealthBot:
         # dummy_retriever = retriever.retriever_dummy
 
         print("Initializing LLM")
-        # llm = ChatOpenAI(temperature=0.7, model= "gpt-4o-mini-2024-07-18", api_key=st.secrets["OPENAI_KEY"], streaming=True)
-        # summary_llm = ChatAnthropic(temperature=0.7, model="claude-3-5-sonnet-20240620", api_key=st.secrets["ANTHROPIC_KEY"])
-        # dummy_llm = ChatOpenAI(temperature=0.7, model= "gpt-4o-mini-2024-07-18", api_key=st.secrets["OPENAI_KEY"], max_tokens=1)
-
         
         load_dotenv()
         GEMINI_API_KEY = get_key(dotenv_path=".env", key_to_get="GEMINI_API_KEY")
