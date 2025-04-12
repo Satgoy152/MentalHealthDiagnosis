@@ -114,18 +114,20 @@ class IterativeRagMentalHealthBot:
         print("Starting iterative chat stream")
         session_id = "abc123"
         history = self.store[session_id] if session_id in self.store else ChatMessageHistory()
-
+        # do the initial retrieval for RAG 
         initial_docs = self.retriever.invoke({
             "input": text,
             "chat_history": history.messages
         })
 
+
+        # refine the query for rag
         refined_query = self.refined_query_chain.invoke({
             "input": text,
             "context": IterativeRagMentalHealthBot.format_docs(initial_docs)
         })
 
-
+        # get the final RAG response 
         final_answer = self.conversational_rag_chain.invoke(
             {"input": refined_query},
             config={"configurable": {"session_id": session_id}}
