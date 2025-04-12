@@ -17,11 +17,19 @@ import streamlit as st
 from retrieval import Retriever
 import google.generativeai as genai
 from dotenv import load_dotenv, get_key
+from langchain_core.documents import Document
+
 
 class IterativeRagMentalHealthBot:
 
     def format_docs(docs):
-        return "\n\n".join(doc.page_content for doc in docs)
+        formatted = []
+        for doc in docs:
+            if isinstance(doc, str):
+                formatted.append(Document(page_content=doc, metadata={}))
+            else:
+                formatted.append(doc)
+        return formatted
 
     def __init__(self):
         print("Starting Bot -----------------------------------###")
@@ -103,15 +111,14 @@ class IterativeRagMentalHealthBot:
         self.llm = llm
 
     def iterative_chat_stream(self, text: str):
+        print("Starting iterative chat stream")
         session_id = "abc123"
         history = self.store[session_id] if session_id in self.store else ChatMessageHistory()
-
 
         initial_docs = self.retriever.invoke({
             "input": text,
             "chat_history": history.messages
         })
-
 
         refined_query = self.refined_query_chain.invoke({
             "input": text,
