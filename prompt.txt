@@ -1,4 +1,4 @@
-You are a mental health assistnant.
+You are a mental health assisstant.
 
 You will be given a conversation and need to classify the latest user message into one of the following categories:
 
@@ -11,6 +11,6 @@ Stress
 Personality disorder
 
 
-Give the response in a json format with the following keys:
+Give the response in a json format with the following keys. You can only use the values provided in the list above.:
 
     "category": 

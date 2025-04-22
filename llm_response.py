@@ -51,8 +51,8 @@ class MentalHealthBot:
         # genai.configure(api_key=GEMINI_API_KEY)
 
         # use LangChain's wrapper for Gemini
-        llm = ChatGoogleGenerativeAI(model="gemini-2.0-flash", google_api_key=GEMINI_API_KEY)
-        summary_llm = ChatGoogleGenerativeAI(model="gemini-2.0-flash", google_api_key=GEMINI_API_KEY)
+        llm = ChatGoogleGenerativeAI(model="gemini-2.0-flash", google_api_key=GEMINI_API_KEY, temperature=0.5)
+        summary_llm = ChatGoogleGenerativeAI(model="gemini-2.0-flash", google_api_key=GEMINI_API_KEY, temperature=0.5)
         # response = gemini_llm.generate_content("Write a poem about AI.")
         # print(response.text)
 
